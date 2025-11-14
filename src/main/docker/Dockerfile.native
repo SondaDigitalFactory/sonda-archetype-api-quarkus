@@ -1,0 +1,34 @@
+###
+# Dockerfile multi-stage optimizado para generar la imagen nativa.
+# Construcción:
+#   docker build -f src/main/docker/Dockerfile.native -t quarkus/arquetipo-quarkus .
+# Ejecución:
+#   docker run -i --rm -p 8082:8082 quarkus/arquetipo-quarkus
+###
+
+FROM quay.io/quarkus/ubi-quarkus-mandrel-builder-image:23.1-java21 AS build
+WORKDIR /project
+
+USER root
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+RUN chmod +x mvnw \
+    && chown -R 1001:root /project
+
+USER 1001
+RUN ./mvnw -B -Pnative -DskipTests package
+
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --from=build --chown=1001:root --chmod=0755 /project/target/*-runner /work/application
+
+EXPOSE 8082
+USER 1001
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
