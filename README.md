@@ -63,11 +63,11 @@ La API REST expone el recurso `POST /consulta-personas-instituciones`.
 Este proyecto puede transformarse en un arquetipo mediante el plugin oficial. Asegúrate de contar con un `~/.m2/settings.xml` válido (aunque sea vacío) para que el invoker se ejecute correctamente.
 
 ```bash
-./mvnw clean
+mvn clean
 ```
 
 ```bash
-./mvnw archetype:create-from-project
+mvn archetype:create-from-project
 ```
 
 El arquetipo generado quedará en `target/generated-sources/archetype`. Para instalarlo en el repositorio local:
