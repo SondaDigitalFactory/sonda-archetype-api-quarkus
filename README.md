@@ -14,7 +14,7 @@ Plantilla de referencia para construir microservicios Quarkus alineados con buen
 - **Docker** para compilar y ejecutar la imagen nativa sin instalar GraalVM localmente.
 - **Acceso a Internet** para descargar dependencias (Maven Wrapper, imágenes base de Docker).
 
-> El repositorio incorpora el *Maven Wrapper* (`./mvnw`), por lo que no es necesario tener Maven preinstalado.
+> El repositorio incorpora el *Maven Wrapper* (`mvn`), por lo que no es necesario tener Maven preinstalado.
 
 ## Estructura Principal
 
@@ -35,15 +35,15 @@ src/main/java/co/com/keralty/archetype/
 ### Compilación y ejecución en JVM
 
 ```bash
-./mvnw clean package
+mvn clean package
 ```
 
 ```bash
-./mvnw quarkus:dev
+mvn quarkus:dev
 ```
 
 ```bash
-./mvnw quarkus:run
+mvn quarkus:run
 ```
 
 La API REST expone el recurso `POST /consulta-personas-instituciones`.
@@ -51,7 +51,7 @@ La API REST expone el recurso `POST /consulta-personas-instituciones`.
 ### Compilación nativa local (GraalVM instalado)
 
 ```bash
-./mvnw clean package -Pnative -DskipTests
+mvn clean package -Pnative -DskipTests
 ```
 
 ```bash
@@ -80,20 +80,31 @@ cd target/generated-sources/archetype
 mvn install
 ```
 
+NOTA: IMPORTANTE - para utilizar el comando de generacion de proyecto nacido de arquetipo ejecutarlo en la ruta en donde se desee crear el nuevo proyecto, no en la ruta del arquetipo.
+
 Luego podrás reutilizarlo con:
 
 ```bash
-mvn archetype:generate \
-  -DarchetypeGroupId=co.com.keralty.base \
-  -DarchetypeArtifactId=sonda-archetype-api-quarkus-archetype \
-  -DarchetypeVersion=1.0.0-SNAPSHOT
+
+mvn archetype:generate \  
+    -DarchetypeCatalog=local  \ 
+    -DarchetypeGroupId=co.com.keralty.base \
+    -DarchetypeArtifactId=sonda-archetype-api-quarkus-archetype \
+    -DarchetypeVersion=1.0.0-SNAPSHOT  \
+    -DgroupId=co.com.keralty  \
+    -DartifactId=consulta-header  \
+    -Dversion=1.0.0-SNAPSHOT  \
+    -Dpackage=co.com.keralty.consulta.header   \
+    -DinteractiveMode=false
+ 
 ```
+
 
 ## Construcción y Ejecución Nativa con Docker
 
 El repositorio incluye `src/main/docker/Dockerfile.native` con un flujo multi-stage que:
 
-1. Usa `quay.io/quarkus/ubi-quarkus-mandrel-builder-image:23.1-java21` para construir el binario con `./mvnw`.
+1. Usa `quay.io/quarkus/ubi-quarkus-mandrel-builder-image:23.1-java21` para construir el binario con `mvn`.
 2. Empaqueta el ejecutable en `registry.access.redhat.com/ubi9/ubi-minimal:9.4`, ideal para entornos financieros.
 
 ### Construcción de la imagen
