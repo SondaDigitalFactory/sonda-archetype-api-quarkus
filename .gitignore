@@ -6,5 +6,4 @@ target/
 .settings/
 *.log
 .DS_Store
-out/
 
