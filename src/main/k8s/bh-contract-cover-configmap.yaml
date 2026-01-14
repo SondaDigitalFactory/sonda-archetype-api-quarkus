@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bh-contract-cover-configmap
+  namespace: cachebh
+data:
+  JAVA_OPTS: '-Xms200M -Xmx500M -Djava.security.disableSystemPropertiesFile=true -Dquarkus-profile=docker -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager'
+  URL_BHQUERY: 'http://bh-query-datagrid-ksvc-v1.cachebh.svc.cluster.local'

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: contract-cover-deployment
+    app.kubernetes.io/component: contract-cover-deployment
+    app.kubernetes.io/instance: contract-cover-deployment
+    app.kubernetes.io/part-of: contract-cover-deployment
+    io.kompose.service: contract-cover-service
+  name: contract-cover-deployment
+  namespace: cachebh
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contract-cover-deployment
+      io.kompose.service: contract-cover-service
+  template:
+    metadata:
+      labels:
+        app: contract-cover-deployment
+        io.kompose.network/docker-default: "true"
+        io.kompose.service: contract-cover-service
+    spec:
+      containers:
+        - name: contract-cover-deployment
+          image: image-registry.openshift-image-registry.svc:5000/cachebh/co-bhcache-ms-contract-cover:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            timeoutSeconds: 1
+            httpGet:
+              path: /q/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            timeoutSeconds: 1
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            limits:
+              memory: "600Mi"
+              cpu: "200m"
+            requests:
+              cpu: "100m"
+              memory: "300Mi"
+          envFrom:
+            - configMapRef:
+                name: bh-contract-cover-configmap
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contract-cover-service
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: contract-cover-deployment
+
+
